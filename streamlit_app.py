@@ -5,62 +5,155 @@ import matplotlib.pyplot as plt
 
 st.title("Interactive Deterministic Function Visualization")
 
-g = gr.Digraph()
+# ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₀ 
 
-g.attr(rankdir='LR')
-
-# Solid edges
-g.edge("T", "Y")
-g.edge("C", "T")
-g.edge("C", "Y")
-
-# Nodes
-g.node("Y", label='Y')
-g.node("C", label='C')
-g.node("T", label='T')
-
-st.graphviz_chart(g)
-
-st.header("Parameters")
-
-# --- Data domain ---
+# --- Data ---
+# Define Gaussian PDF
 def normal_dist(x, mean, sd):
     prob_density = (1 / (np.sqrt(2 * np.pi) * sd)) * np.exp(-0.5 * ((x - mean) / sd) ** 2)
     return prob_density
 
+# Set the x points for calculation
 x_values = np.linspace(-5, 5, 250) 
 
-# --- Two columns for parameters ---
-col1, col2 = st.columns(2)
+# --- Model parameters ---
+st.header("Model parameters", divider="rainbow")
 
-with col1:
-    st.subheader("C Parameters")
-    C_mean = st.slider("C (μ)", -5.0, 5.0, 0.0, 0.1)
+# --- First row (C, T, M1) ---
+row0_col0, row0_col1, row0_col2 = st.columns(3)
+
+with row0_col0:
+    st.subheader("C node")
+    C_mean = st.slider("C (μ)", -3.0, 3.0, 0.0, 0.1)
     C_sd = st.slider("C (σ)", 0.1, 2.0, 1.0, 0.1)
     C = normal_dist(x=x_values, mean=C_mean, sd=C_sd)
 
-with col2:
-    st.subheader("T Parameters")
-    beta_5 = st.slider("β₅ (coefficient)", -5.0, 5.0, 0.0, 0.1)
-    eT_mean = st.slider("T (μ)", -5.0, 5.0, 0.0, 0.1)
+with row0_col1:
+    st.subheader("T node")
+    beta_5 = st.slider("β₅ (coefficient)", -3.0, 3.0, 0.0, 0.1)
+    # eT_mean = st.slider("T (μ)", -3.0, 3.0, 0.0, 0.1)
     eT_sd = st.slider("T (σ)", 0.1, 2.0, 1.0, 0.1)
-    T_mean = beta_5 * C_mean + eT_mean
+    T_mean = beta_5 * C_mean #+ eT_mean
     T_sd = np.sqrt(beta_5**2 * C_sd**2 + eT_sd**2)
     T = normal_dist(x=x_values, mean=T_mean, sd=T_sd)
 
+with row0_col2:
+    st.subheader("M₁ node")
+    beta_0 = st.slider("β₀ (coefficient)", -3.0, 3.0, 0.0, 0.1)
+    beta_2 = st.slider("β₂ (coefficient)", -3.0, 3.0, 0.0, 0.1)
+    # eM1_mean = st.slider("M₁ (μ)", -3.0, 3.0, 0.0, 0.1)
+    eM1_sd = st.slider("M₁ (σ)", 0.1, 2.0, 1.0, 0.1)
+    # M2_mean = f(T(C))
+    # M2_sd = 
+    # M2 = normal_dist(x=x_values, mean=..., sd=...)
+
+# --- Second row (Z1, Z2, M2) ---
+row1_col0, row1_col1, row1_col2 = st.columns(3)
+
+with row1_col0:
+    st.subheader("Z₁ node")
+    # beta_2 = st.slider("β₂ (coefficient)", -3.0, 3.0, 0.0, 0.1)
+    eZ1_mean = st.slider("Z₁ (μ)", -3.0, 3.0, 0.0, 0.1)
+    eZ1_sd = st.slider("Z₁ (σ)", 0.1, 2.0, 1.0, 0.1)
+    # M2_mean = f(T(C))
+    # M2_sd = 
+    # M2 = normal_dist(x=x_values, mean=..., sd=...)
+
+with row1_col1:
+    st.subheader("Z₂ node")
+    # beta_2 = st.slider("β₃ (coefficient)", -3.0, 3.0, 0.0, 0.1)
+    eZ1_mean = st.slider("Z₂ (μ)", -3.0, 3.0, 0.0, 0.1)
+    eZ1_sd = st.slider("Z₂ (σ)", 0.1, 2.0, 1.0, 0.1)
+    # M2_mean = f(T(C))
+    # M2_sd = 
+    # M2 = normal_dist(x=x_values, mean=..., sd=...)
+
+with row1_col2:
+    st.subheader("M₂ node")
+    beta_1 = st.slider("β₁ (coefficient)", -3.0, 3.0, 0.0, 0.1)
+    eM2_mean = st.slider("M₂ (μ)", -3.0, 3.0, 0.0, 0.1)
+    eM2_sd = st.slider("M₂ (σ)", 0.1, 2.0, 1.0, 0.1)
+    # M2_mean = f(T(C))
+    # M2_sd = 
+    # M2 = normal_dist(x=x_values, mean=..., sd=...)
+
+# --- Third row (Y) ---
+row2_col0, row2_col1, row2_col2 = st.columns(3)
+
+with row2_col0:
+    st.subheader("Y node")
+    beta_2 = st.slider("Y_0 (coefficient)", -3.0, 3.0, 0.0, 0.1)
+    beta_3 = st.slider("Y_1 (coefficient)", -3.0, 3.0, 0.0, 0.1)
+
+with row2_col1:
+    st.subheader("")
+    beta_4 = st.slider("Y_2 (coefficient)", -3.0, 3.0, 0.0, 0.1)
+    beta_6 = st.slider("βY_3 (coefficient)", -3.0, 3.0, 0.0, 0.1)
+
+with row2_col2:
+    st.subheader("")
+    beta_7 = st.slider("Y_4 (coefficient)", -3.0, 3.0, 0.0, 0.1)
+    Y_sd = st.slider("Y_SD (σ)", 0.1, 2.0, 1.0, 0.1)    
+
+st.divider()   
+
+# --- Directed Acyclic Graph ---
+st.header("Directed Acyclic Graph (DAG)", divider="rainbow")
+
+# --- Helper function ---
+def edge_color(beta, default_color="black"):
+    """Return white if beta == 0, else default color."""
+    return "grey92" if beta == 0 else default_color
+
+g = gr.Digraph()
+
+g.attr(rankdir='LR')
+
+beta_off = 1
+
+# Solid edges
+g.edge("C", "T", label=f"β₅ = {beta_5}", color=edge_color(beta_5))
+g.edge("Z₂", "M₁", label=f"β_off = {beta_off}", color=edge_color(beta_off))
+g.edge("T", "M₁", label=f"β_off = {beta_off}", color=edge_color(beta_off))
+g.edge("T", "M₂", label=f"β_off = {beta_off}", color=edge_color(beta_off))
+
+g.edge("Z₁", "Y", label=f"β_off = {beta_off}", color=edge_color(beta_off))
+g.edge("M₁", "Y", label=f"β_off = {beta_off}", color=edge_color(beta_off))
+g.edge("M₂", "Y", label=f"β_off = {beta_off}", color=edge_color(beta_off))
+g.edge("C", "Y", label=f"β_off = {beta_off}", color=edge_color(beta_off))
+g.edge("T", "Y", label=f"β_off = {beta_off}", color=edge_color(beta_off))
+
+st.graphviz_chart(g)
+
 # --- Plotting ---
-fig, ax = plt.subplots()
+st.header("Probability Densities", divider="rainbow")
 
-ax.plot(x_values, C, label='C')
-ax.plot(x_values, T, label='T')
+# --- Create two stacked subplots ---
+fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(6, 3), sharex=True)
 
-ax.set_xlim(-5, 5)
-ax.set_xticks(np.arange(-5, 6, 1))
-ax.set_xlabel('X')
-ax.set_ylim(0, 0.5)
-ax.set_ylabel('Probability Density')
-ax.legend()
-ax.grid(True)
+# --- First plot: C ---
+ax1.plot(x_values, C, color='blue', label='C')
+ax1.set_xlim(-5, 5)
+ax1.set_xticks(np.arange(-5, 6, 1))
+ax1.set_ylim(0, 0.5)
+ax1.set_yticks(np.arange(0, 0.6, 0.1))
+ax1.set_ylabel('P(C)')
+ax1.legend()
+ax1.grid(True)
 
-# ✅ Display in Streamlit
+# --- Second plot: T ---
+ax2.plot(x_values, T, color='red', label='T')
+ax2.set_xlim(-5, 5)
+ax2.set_xticks(np.arange(-5, 6, 1))
+ax2.set_ylim(0, 0.5)
+ax2.set_yticks(np.arange(0, 0.6, 0.1))
+ax2.set_xlabel('X')
+ax2.set_ylabel('P(T)')
+ax2.legend()
+ax2.grid(True)
+
+# --- Layout fix for Streamlit display ---
+plt.tight_layout()
+
+# ✅ Display stacked plots in Streamlit
 st.pyplot(fig)
